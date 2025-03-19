@@ -2,7 +2,7 @@
 
 # Create the API Gateway
 resource "aws_api_gateway_rest_api" "api" {
-  name        = "lfre-api-${var.app_name}-${var.environment}-${var.version}"
+  name        = "lfre-api-${var.app_name}-${var.environment}-${var.resource_version}"
   description = "API Gateway for ${var.app_name} ${var.environment}"
 
   endpoint_configuration {
@@ -29,7 +29,7 @@ resource "aws_api_gateway_method" "get_items" {
   rest_api_id   = aws_api_gateway_rest_api.api.id
   resource_id   = aws_api_gateway_resource.items.id
   http_method   = "GET"
-  authorization_type = "NONE"
+  authorization = "NONE"
   api_key_required = true
 }
 
@@ -48,7 +48,7 @@ resource "aws_api_gateway_method" "post_items" {
   rest_api_id   = aws_api_gateway_rest_api.api.id
   resource_id   = aws_api_gateway_resource.items.id
   http_method   = "POST"
-  authorization_type = "NONE"
+  authorization = "NONE"
   api_key_required = true
 }
 
@@ -67,7 +67,7 @@ resource "aws_api_gateway_method" "put_item" {
   rest_api_id   = aws_api_gateway_rest_api.api.id
   resource_id   = aws_api_gateway_resource.item.id
   http_method   = "PUT"
-  authorization_type = "NONE"
+  authorization = "NONE"
   api_key_required = true
 }
 
@@ -86,7 +86,7 @@ resource "aws_api_gateway_method" "delete_item" {
   rest_api_id   = aws_api_gateway_rest_api.api.id
   resource_id   = aws_api_gateway_resource.item.id
   http_method   = "DELETE"
-  authorization_type = "NONE"
+  authorization = "NONE"
   api_key_required = true
 }
 
@@ -100,7 +100,7 @@ resource "aws_api_gateway_integration" "delete_item_integration" {
   uri                     = var.lambda_write_invoke_arn
 }
 
-# Create deployment and stage
+# Create deployment
 resource "aws_api_gateway_deployment" "deployment" {
   depends_on = [
     aws_api_gateway_integration.get_items_integration,
@@ -110,25 +110,31 @@ resource "aws_api_gateway_deployment" "deployment" {
   ]
 
   rest_api_id = aws_api_gateway_rest_api.api.id
-  stage_name  = var.environment
 
   lifecycle {
     create_before_destroy = true
   }
 }
 
+# Create stage (separated from deployment to avoid deprecation warning)
+resource "aws_api_gateway_stage" "stage" {
+  deployment_id = aws_api_gateway_deployment.deployment.id
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  stage_name    = var.environment
+}
+
 # Create API key
 resource "aws_api_gateway_api_key" "api_key" {
-  name = "lfre-apikey-${var.app_name}-${var.environment}-${var.version}"
+  name = "lfre-apikey-${var.app_name}-${var.environment}-${var.resource_version}"
 }
 
 # Create usage plan
 resource "aws_api_gateway_usage_plan" "usage_plan" {
-  name = "lfre-usageplan-${var.app_name}-${var.environment}-${var.version}"
+  name = "lfre-usageplan-${var.app_name}-${var.environment}-${var.resource_version}"
 
   api_stages {
     api_id = aws_api_gateway_rest_api.api.id
-    stage  = aws_api_gateway_deployment.deployment.stage_name
+    stage  = aws_api_gateway_stage.stage.stage_name
   }
 
   quota_settings {

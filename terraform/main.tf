@@ -3,21 +3,21 @@
 module "dynamodb" {
   source = "./modules/dynamodb"
 
-  app_name    = var.app_name
-  environment = var.environment
-  owner       = var.owner
-  managed_by  = var.managed_by
-  version     = var.version
+  app_name         = var.app_name
+  environment      = var.environment
+  owner            = var.owner
+  managed_by       = var.managed_by
+  resource_version = var.app_version
 }
 
 module "lambda" {
   source = "./modules/lambda"
 
-  app_name    = var.app_name
-  environment = var.environment
-  owner       = var.owner
-  managed_by  = var.managed_by
-  version     = var.version
+  app_name         = var.app_name
+  environment      = var.environment
+  owner            = var.owner
+  managed_by       = var.managed_by
+  resource_version = var.app_version
 
   dynamodb_table_name  = module.dynamodb.table_name
   dynamodb_table_arn   = module.dynamodb.table_arn
@@ -26,11 +26,11 @@ module "lambda" {
 module "api_gateway" {
   source = "./modules/api_gateway"
 
-  app_name    = var.app_name
-  environment = var.environment
-  owner       = var.owner
-  managed_by  = var.managed_by
-  version     = var.version
+  app_name         = var.app_name
+  environment      = var.environment
+  owner            = var.owner
+  managed_by       = var.managed_by
+  resource_version = var.app_version
 
   lambda_read_name  = module.lambda.read_function_name
   lambda_read_arn   = module.lambda.read_function_arn

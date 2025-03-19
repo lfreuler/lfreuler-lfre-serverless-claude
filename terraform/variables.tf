@@ -26,7 +26,7 @@ variable "managed_by" {
   default     = "Terraform"
 }
 
-variable "version" {
+variable "app_version" {
   description = "Version identifier for resources"
   type        = string
   default     = "v1"

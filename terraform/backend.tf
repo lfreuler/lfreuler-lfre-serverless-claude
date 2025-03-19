@@ -14,8 +14,8 @@ terraform {
     }
   }
 
-  backend "s3" {
-    # Backend configuration is partially provided via backend.tfvars
-    key = "lfre-dataservice/terraform.tfstate"
+  # Using local backend for simplicity
+  backend "local" {
+    path = "terraform.tfstate"
   }
 }

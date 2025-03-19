@@ -2,7 +2,7 @@
 
 # Create the IAM role for Lambda functions
 resource "aws_iam_role" "lambda_role" {
-  name = "lfre-role-lambda-${var.app_name}-${var.environment}-${var.version}"
+  name = "lfre-role-lambda-${var.app_name}-${var.environment}-${var.resource_version}"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -26,7 +26,7 @@ resource "aws_iam_role_policy_attachment" "lambda_basic_execution" {
 
 # Create a policy for DynamoDB access
 resource "aws_iam_policy" "dynamodb_access" {
-  name        = "lfre-policy-dynamodb-${var.app_name}-${var.environment}-${var.version}"
+  name        = "lfre-policy-dynamodb-${var.app_name}-${var.environment}-${var.resource_version}"
   description = "Policy for DynamoDB access from Lambda functions"
 
   policy = jsonencode({
@@ -153,7 +153,7 @@ EOF
 }
 
 resource "aws_lambda_function" "read_function" {
-  function_name    = "lfre-lambda-read-${var.app_name}-${var.environment}-${var.version}"
+  function_name    = "lfre-lambda-read-${var.app_name}-${var.environment}-${var.resource_version}"
   filename         = data.archive_file.read_lambda_zip.output_path
   source_code_hash = data.archive_file.read_lambda_zip.output_base64sha256
   role             = aws_iam_role.lambda_role.arn
@@ -315,7 +315,7 @@ exports.handler = async (event) => {
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ message: `Deleted ${result.Items.length} items with id: ${id}` })
+          body: JSON.stringify({ message: 'Deleted items successfully' })
         };
       }
     }
@@ -346,7 +346,7 @@ EOF
 }
 
 resource "aws_lambda_function" "write_function" {
-  function_name    = "lfre-lambda-write-${var.app_name}-${var.environment}-${var.version}"
+  function_name    = "lfre-lambda-write-${var.app_name}-${var.environment}-${var.resource_version}"
   filename         = data.archive_file.write_lambda_zip.output_path
   source_code_hash = data.archive_file.write_lambda_zip.output_base64sha256
   role             = aws_iam_role.lambda_role.arn

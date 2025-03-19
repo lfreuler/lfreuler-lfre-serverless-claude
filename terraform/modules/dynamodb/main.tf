@@ -1,7 +1,7 @@
 # DynamoDB module - main.tf
 
 resource "aws_dynamodb_table" "table" {
-  name         = "lfre-dynamo-${var.app_name}-${var.environment}-${var.version}"
+  name         = "lfre-dynamo-${var.app_name}-${var.environment}-${var.resource_version}"
   billing_mode = "PAY_PER_REQUEST"  # On-demand capacity mode
   hash_key     = "id"
   range_key    = "timestamp"

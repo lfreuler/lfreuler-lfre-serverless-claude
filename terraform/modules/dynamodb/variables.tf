@@ -20,7 +20,7 @@ variable "managed_by" {
   type        = string
 }
 
-variable "version" {
+variable "resource_version" {
   description = "Version identifier for resources"
   type        = string
 }
